@@ -4,10 +4,10 @@
   "description": "proyecto de traducciones usando javaScript y el API de OpenAI",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
-    "serve": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "start": "node app.js",
+  "serve": "node app.js",
+  "test": "echo \"Error: no test specified\" && exit 1"
+},
   "author": "Fco.Javier",
   "type": "module",
   "license": "MIT",
