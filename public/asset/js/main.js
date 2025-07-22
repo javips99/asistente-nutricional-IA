@@ -32,7 +32,7 @@ async function sendMessage() {
     displayMessages("Pensando...", "bot");
 
     try {
-        const response = await fetch("http://localhost:3000/api/nutri-chat", {
+        const response = await fetch("https://asistente-nutricional-ia.onrender.com/api/nutri-chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
