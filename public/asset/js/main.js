@@ -15,7 +15,12 @@ function displayMessages(msg, sender) {
     msgDiv.textContent = msg;
 
     chatbox.appendChild(msgDiv);
-    chatbox.scrollTop = chatbox.scrollHeight;
+    
+    // Smooth scroll down
+    chatbox.scrollTo({
+        top: chatbox.scrollHeight,
+        behavior: 'smooth'
+    });
 }
 
 // Enviar mensaje al backend
@@ -52,15 +57,29 @@ async function sendMessage() {
 
                if (data.reply.length >= 100) {
 
-            const md = new markdownit();
+            // Enable HTML inside Markdown for tables
+            const md = new markdownit({ html: true });
 
             const htmlContent = md.render(data.reply);
 
             lastBotMsg.innerHTML = htmlContent;
 
+            // Agrupar filas de la tabla si existe column "Día" (índice 0)
+            const table = lastBotMsg.querySelector("table");
+            if (table) {
+                mergeTableCells(table, 0);
+            }
+
         }else{
             lastBotMsg.textContent = data.reply;
         }
+
+        // Auto-scroll after markdown renders
+        chatbox.scrollTo({
+            top: chatbox.scrollHeight,
+            behavior: 'smooth'
+        });
+
 
         
         } else {
@@ -84,3 +103,36 @@ userInput.addEventListener("keydown", (e) => {
         sendMessage();
     }
 });
+
+// Función para agrupar celdas continuas en la misma columna (ej. para la columna "Día")
+function mergeTableCells(table, columnIndex) {
+    const tbody = table.querySelector("tbody");
+    if (!tbody) return;
+
+    let previousCell = null;
+    let rowspanCounter = 1;
+
+    Array.from(tbody.querySelectorAll("tr")).forEach((row) => {
+        const cells = row.querySelectorAll("td");
+        if (cells.length <= columnIndex) return;
+
+        const currentCell = cells[columnIndex];
+        const currentText = currentCell.textContent.trim();
+
+        if (previousCell && previousCell.textContent.trim() === currentText) {
+            rowspanCounter++;
+            previousCell.setAttribute("rowspan", rowspanCounter);
+            currentCell.style.display = "none"; // Ocultar celda duplicada
+        } else {
+            previousCell = currentCell;
+            rowspanCounter = 1;
+
+            // Estilos para destacar la celda agrupada
+            previousCell.style.verticalAlign = "middle";
+            previousCell.style.fontWeight = "600";
+            previousCell.style.color = "var(--primary-dark)";
+            previousCell.style.borderRight = "1px solid var(--border-color)";
+            previousCell.style.backgroundColor = "white"; // Aseguramos que destaque sobre el estilo 'striped' de CSS
+        }
+    });
+}
